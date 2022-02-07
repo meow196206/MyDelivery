@@ -7,3 +7,10 @@ spring:
     password: postgres
     url: jdbc:postgresql://localhost:5432/postgres
     driver-class-name: org.postgresql.Driver
+  liquibase:
+    user: postgres
+    password: postgres
+    change-log: /liquibase/changelog.xml
+    url: "jdbc:postgresql://localhost:5432/postgres"
+    database-change-log-table: databaseChangeLog
+    database-change-log-lock-table: databaseChangeLogLock
