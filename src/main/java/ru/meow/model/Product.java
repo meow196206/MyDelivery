@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -20,5 +22,8 @@ public class Product {
     private int price;
     @Column
     private String description;
+
+//    @ManyToMany(mappedBy = "productList")
+//    private List<Order> orderList;
 
 }

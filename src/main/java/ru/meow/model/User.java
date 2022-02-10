@@ -1,9 +1,12 @@
 package ru.meow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -19,5 +22,9 @@ public class User {
     @Column
     private String name;
     @Column
+    @JsonIgnore
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orderList;
 }
