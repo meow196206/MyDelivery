@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -18,4 +20,12 @@ public class Storage {
     private String address;
     @Column
     private String name;
+
+    @ManyToMany
+    @JoinTable(name = "storage_product",
+            joinColumns =
+            @JoinColumn(name = "storage_id", referencedColumnName = "id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "product_id", referencedColumnName = "id"))
+    private List<Product> productList;
 }

@@ -5,7 +5,6 @@ CREATE TABLE favorites_products
 (
     user_id    BIGSERIAL NOT NULL,
     product_id BIGSERIAL NOT NULL,
-    count      BIGINT,
 
     constraint FK_user FOREIGN KEY (user_id) references users (id),
     constraint FK_product FOREIGN KEY (product_id) references product (id),

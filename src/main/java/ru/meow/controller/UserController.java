@@ -48,15 +48,15 @@ public class UserController {
     }
 
     @PostMapping("{userId}/product/{productId}")
-    public User addFavoritesProductToUser(@PathVariable Long userId, @PathVariable Long productId) {
+    public Product addProductToFavorites(@PathVariable Long userId, @PathVariable Long productId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             Optional<Product> productOptional = productRepository.findById(productId);
             if (productOptional.isPresent()) {
                 Product product = productOptional.get();
                 User user = userOptional.get();
-                user.getProductList().add(product);
-                return userRepository.save(user);
+                user.getFavoritesList().add(product);
+                return productRepository.save(product);
             } else {
                 throw new IllegalArgumentException("Не существует такого продукта " + productId);
             }
