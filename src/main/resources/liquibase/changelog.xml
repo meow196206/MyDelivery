@@ -12,4 +12,5 @@
     <include file="sql/V3_ddl_create_storage.sql" relativeToChangelogFile="true"/>
     <include file="sql/V4_ddl_create_order.sql" relativeToChangelogFile="true"/>
     <include file="sql/V5_ddl_create_orders_products.sql" relativeToChangelogFile="true"/>
+    <include file="sql/V6_ddl_create_favorites_products.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

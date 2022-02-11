@@ -27,4 +27,19 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Order> orderList;
+
+//    @OneToMany(mappedBy = "user")
+//    private List<Product> productList;
+
+    @OneToMany
+    @JoinTable(name = "favorites_products",
+            joinColumns =
+            @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "product_id", referencedColumnName = "id"))
+    private List<Product> productList;
+
+//    @OneToMany
+//    @JoinColumn(name = "product_id", referencedColumnName = "id")
+//    private List<User> userList;
 }

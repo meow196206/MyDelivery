@@ -2,7 +2,10 @@ package ru.meow.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.meow.model.Order;
+import ru.meow.model.Product;
 import ru.meow.model.User;
+import ru.meow.repository.ProductRepository;
 import ru.meow.repository.UserRepository;
 
 import java.util.List;
@@ -12,7 +15,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
-
+    private ProductRepository productRepository;
     private UserRepository userRepository;
 
     @GetMapping("/")
@@ -41,6 +44,24 @@ public class UserController {
             return userRepository.save(user1);
         } else {
             throw new IllegalArgumentException("не смог найти id");
+        }
+    }
+
+    @PostMapping("{userId}/product/{productId}")
+    public User addFavoritesProductToUser(@PathVariable Long userId, @PathVariable Long productId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            Optional<Product> productOptional = productRepository.findById(productId);
+            if (productOptional.isPresent()) {
+                Product product = productOptional.get();
+                User user = userOptional.get();
+                user.getProductList().add(product);
+                return userRepository.save(user);
+            } else {
+                throw new IllegalArgumentException("Не существует такого продукта " + productId);
+            }
+        } else {
+            throw new IllegalArgumentException("Не существует такого пользователя " + userId);
         }
     }
 }
