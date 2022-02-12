@@ -1,6 +1,5 @@
 package ru.meow.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,7 +20,6 @@ public class User {
     @Column
     private String name;
     @Column
-    @JsonIgnore
     private String password;
 
     @OneToMany(mappedBy = "user")

@@ -14,3 +14,6 @@ spring:
     url: "jdbc:postgresql://localhost:5432/postgres"
     database-change-log-table: databaseChangeLog
     database-change-log-lock-table: databaseChangeLogLock
+
+  jpa:
+    show-sql: true
