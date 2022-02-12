@@ -1,11 +1,8 @@
 package ru.meow.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
-
-import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 

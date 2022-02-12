@@ -2,7 +2,6 @@ package ru.meow.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.meow.model.Order;
 import ru.meow.model.Product;
 import ru.meow.model.Storage;
 import ru.meow.repository.ProductRepository;
