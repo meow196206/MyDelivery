@@ -31,6 +31,5 @@ public class UserServiceStub implements UserService {
 
     @Override
     public void addProductToFavorites(Long userId, Long productId) {
-
     }
 }

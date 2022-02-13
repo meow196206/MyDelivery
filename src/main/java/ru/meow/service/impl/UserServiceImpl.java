@@ -3,7 +3,6 @@ package ru.meow.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import ru.meow.dto.ProductDTO;
 import ru.meow.dto.UserDTO;
 import ru.meow.model.Product;
 import ru.meow.model.User;
@@ -31,7 +30,6 @@ public class UserServiceImpl implements UserService {
             userDTO.setId(user.getId());
             userDTO.setName(user.getName());
             userDTO.setLogin(user.getLogin());
-            newAll.add(userDTO);
         }
         return newAll;
     }
@@ -64,7 +62,7 @@ public class UserServiceImpl implements UserService {
             userDTO.setId(save.getId());
             return userDTO;
         } else {
-            throw new IllegalArgumentException("не смог найти id");
+            throw new IllegalArgumentException("Не смог найти id");
         }
     }
 

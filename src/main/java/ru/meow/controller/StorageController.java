@@ -2,65 +2,39 @@ package ru.meow.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.meow.model.Product;
-import ru.meow.model.Storage;
-import ru.meow.repository.ProductRepository;
-import ru.meow.repository.StorageRepository;
+import ru.meow.dto.StorageDTO;
+import ru.meow.service.StorageService;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping(path = "/storage")
 public class StorageController {
-
-    private StorageRepository storageRepository;
-    private ProductRepository productRepository;
+    private StorageService storageService;
 
     @GetMapping("/")
-    public List<Storage> getAllStorage() {
-        return storageRepository.findAll();
+    public List<StorageDTO> getAllStorage() {
+        return storageService.getAllStorage();
     }
 
     @PostMapping("/")
-    public Storage createStorage(@RequestBody Storage storage) {
-        return storageRepository.save(storage);
+    public StorageDTO createStorage(@RequestBody StorageDTO storageDTO) {
+        return storageService.createStorage(storageDTO);
     }
 
     @DeleteMapping("/{id}")
     public void deleteStorage(@PathVariable Long id) {
-        storageRepository.deleteById(id);
+        storageService.deletedStorage(id);
     }
 
     @PutMapping("/{id}")
-    public Storage updateStorage(@PathVariable Long id, @RequestBody Storage storage) {
-        Optional<Storage> byId = storageRepository.findById(id);
-        if (byId.isPresent()) {
-            Storage storage1 = byId.get();
-            storage1.setName(storage.getName());
-            storage1.setAddress(storage.getAddress());
-            return storageRepository.save(storage1);
-        } else {
-            throw new IllegalArgumentException("не смог найти id");
-        }
+    public StorageDTO updateStorage(@PathVariable Long id, @RequestBody StorageDTO storageDTO) {
+        return storageService.updateStorage(id, storageDTO);
     }
 
     @PostMapping("{storageId}/product/{productId}")
-    public Storage addProductToStorage(@PathVariable Long storageId, @PathVariable Long productId) {
-        Optional<Storage> storageOptional = storageRepository.findById(storageId);
-        if (storageOptional.isPresent()) {
-            Optional<Product> productOptional = productRepository.findById(productId);
-            if (productOptional.isPresent()) {
-                Product product = productOptional.get();
-                Storage storage = storageOptional.get();
-                storage.getProductList().add(product);
-                return storageRepository.save(storage);
-            } else {
-                throw new IllegalArgumentException("Не существует такого продукта " + productId);
-            }
-        } else {
-            throw new IllegalArgumentException("Не существует такого склада " + storageId);
-        }
+    public void addProductToStorage(@PathVariable Long storageId, @PathVariable Long productId) {
+        storageService.addProductToStorage(storageId, productId);
     }
 }
