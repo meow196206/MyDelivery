@@ -8,7 +8,6 @@ import ru.meow.repository.ProductRepository;
 import ru.meow.service.ProductService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -40,18 +39,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        Optional<Product> byId = productRepository.findById(id);
-        if (byId.isPresent()) {
-            Product product1 = byId.get();
-            product1.setName(productDTO.getName());
-            product1.setPrice(productDTO.getPrice());
-            product1.setDescription(productDTO.getDescription());
-            Product save = productRepository.save(product1);
-            productDTO.setId(save.getId());
-            return productDTO;
-        } else {
-            throw new IllegalArgumentException("Не смог найти id");
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Не смог найти id"));
+        product.setDescription(productDTO.getDescription());
+        product.setName(productDTO.getName());
+        product.setPrice(productDTO.getPrice());
+        Product save = productRepository.save(product);
+        return map(save);
     }
 
     private ProductDTO map(Product product) {

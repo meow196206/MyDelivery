@@ -2,7 +2,6 @@ package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.meow.dto.ProductDTO;
 import ru.meow.dto.StorageDTO;
 import ru.meow.model.Product;
 import ru.meow.model.Storage;
@@ -11,7 +10,6 @@ import ru.meow.repository.StorageRepository;
 import ru.meow.service.StorageService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,17 +42,12 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public StorageDTO updateStorage(Long id, StorageDTO storageDTO) {
-        Optional<Storage> byId = storageRepository.findById(id);
-        if (byId.isPresent()) {
-            Storage storage1 = byId.get();
-            storage1.setAddress(storageDTO.getAddress());
-            storage1.setName(storageDTO.getName());
-            Storage save = storageRepository.save(storage1);
-            storageDTO.setId(save.getId());
-            return storageDTO;
-        } else {
-            throw new IllegalArgumentException("не смог найти id");
-        }
+        Storage storage = storageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("не смог найти id"));
+        storage.setName(storageDTO.getName());
+        storage.setAddress(storageDTO.getAddress());
+        Storage save = storageRepository.save(storage);
+        return map(storage);
     }
 
     @Override
@@ -73,14 +66,5 @@ public class StorageServiceImpl implements StorageService {
         storageDTO.setName(storage.getName());
         storageDTO.setId(storage.getId());
         return storageDTO;
-    }
-
-    private ProductDTO map(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setPrice(product.getPrice());
-        productDTO.setDescription(product.getDescription());
-        productDTO.setName(product.getName());
-        productDTO.setId(product.getId());
-        return productDTO;
     }
 }
