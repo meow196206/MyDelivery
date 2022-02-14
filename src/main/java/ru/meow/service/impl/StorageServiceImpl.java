@@ -1,7 +1,6 @@
 package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.meow.dto.StorageDTO;
 import ru.meow.model.Product;
@@ -16,7 +15,6 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Primary
 public class StorageServiceImpl implements StorageService {
     private StorageRepository storageRepository;
     private ProductRepository productRepository;

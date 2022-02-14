@@ -1,7 +1,6 @@
 package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.meow.dto.OrderDTO;
 import ru.meow.dto.ProductDTO;
@@ -14,7 +13,6 @@ import ru.meow.service.OrderService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Primary
 @AllArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {

@@ -1,7 +1,6 @@
 package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.meow.dto.ProductDTO;
 import ru.meow.model.Product;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Primary
 @AllArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
