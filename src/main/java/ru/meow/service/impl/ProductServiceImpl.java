@@ -7,9 +7,9 @@ import ru.meow.model.Product;
 import ru.meow.repository.ProductRepository;
 import ru.meow.service.ProductService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -18,16 +18,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDTO> getAllProduct() {
-        List<Product> all = productRepository.findAll();
-        List<ProductDTO> newAll = new ArrayList<>();
-        for (Product product : all) {
-            ProductDTO productDTO = new ProductDTO();
-            productDTO.setId(product.getId());
-            productDTO.setName(product.getName());
-            productDTO.setPrice(product.getPrice());
-            productDTO.setDescription(product.getDescription());
-        }
-        return newAll;
+        return productRepository.findAll().stream()
+                .map(this::map)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -59,5 +52,14 @@ public class ProductServiceImpl implements ProductService {
         } else {
             throw new IllegalArgumentException("Не смог найти id");
         }
+    }
+
+    private ProductDTO map(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setPrice(product.getPrice());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setName(product.getName());
+        productDTO.setId(product.getId());
+        return productDTO;
     }
 }

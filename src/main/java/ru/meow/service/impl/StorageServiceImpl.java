@@ -2,6 +2,7 @@ package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.meow.dto.ProductDTO;
 import ru.meow.dto.StorageDTO;
 import ru.meow.model.Product;
 import ru.meow.model.Storage;
@@ -9,9 +10,9 @@ import ru.meow.repository.ProductRepository;
 import ru.meow.repository.StorageRepository;
 import ru.meow.service.StorageService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,16 +22,9 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public List<StorageDTO> getAllStorage() {
-        List<Storage> all = storageRepository.findAll();
-        List<StorageDTO> newAll = new ArrayList<>();
-        for (Storage storage : all) {
-            StorageDTO storageDTO = new StorageDTO();
-            storageDTO.setId(storage.getId());
-            storageDTO.setName(storage.getName());
-            storageDTO.setAddress(storage.getAddress());
-            newAll.add(storageDTO);
-        }
-        return newAll;
+        return storageRepository.findAll().stream()
+                .map(this::map)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -65,19 +59,28 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public void addProductToStorage(Long storageId, Long productId) {
-        Optional<Storage> storageOptional = storageRepository.findById(storageId);
-        if (storageOptional.isPresent()) {
-            Optional<Product> productOptional = productRepository.findById(productId);
-            if (productOptional.isPresent()) {
-                Product product = productOptional.get();
-                Storage storage = storageOptional.get();
-                storage.getProductList().add(product);
-                productRepository.save(product);
-            } else {
-                throw new IllegalArgumentException("Не существует такого продукта " + productId);
-            }
-        } else {
-            throw new IllegalArgumentException("Не существует такого склада " + storageId);
-        }
+        Storage storage = storageRepository.findById(storageId)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого склада " + storageId));
+        Product product = productRepository
+                .findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого склада " + storageId));
+        storageRepository.save(storage);
+    }
+
+    private StorageDTO map(Storage storage) {
+        StorageDTO storageDTO = new StorageDTO();
+        storageDTO.setAddress(storage.getAddress());
+        storageDTO.setName(storage.getName());
+        storageDTO.setId(storage.getId());
+        return storageDTO;
+    }
+
+    private ProductDTO map(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setPrice(product.getPrice());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setName(product.getName());
+        productDTO.setId(product.getId());
+        return productDTO;
     }
 }
