@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.meow.dto.OrderDTO;
+import ru.meow.dto.ProductDTO;
 import ru.meow.model.Order;
 import ru.meow.model.Product;
 import ru.meow.repository.OrderRepository;
 import ru.meow.repository.ProductRepository;
 import ru.meow.service.OrderService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Primary
 @AllArgsConstructor
@@ -23,29 +23,37 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> findByOrderId(Long id) {
-        List<Order> all = orderRepository.findAll();
-        List<OrderDTO> newAll = new ArrayList<>();
-        for (Order order : all) {
-            OrderDTO orderDTO = new OrderDTO();
-            orderDTO.setId(order.getId());
-        }
-        return newAll;
+        return orderRepository.findAll().stream()
+                .map(this::map)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void addProductToOrder(Long orderId, Long productId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (orderOptional.isPresent()) {
-            Optional<Product> productOptional = productRepository.findById(productId);
-            if (productOptional.isPresent()) {
-                Product product = productOptional.get();
-                Order order = orderOptional.get();
-                order.getProductList().add(product);
-            } else {
-                throw new IllegalArgumentException("Не существует такого продукта " + productId);
-            }
-        } else {
-            throw new IllegalArgumentException("Не существует такого заказа " + orderId);
-        }
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого заказа " + orderId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
+        order.getProductList().add(product);
+        orderRepository.save(order);
+    }
+
+    private OrderDTO map(Order order) {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(order.getId());
+        List<ProductDTO> collect = order.getProductList().stream()
+                .map(this::map)
+                .collect(Collectors.toList());
+        orderDTO.setProductList(collect);
+        return orderDTO;
+    }
+
+    private ProductDTO map(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setPrice(product.getPrice());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setName(product.getName());
+        productDTO.setId(product.getId());
+        return productDTO;
     }
 }
