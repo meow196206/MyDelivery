@@ -58,6 +58,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Не существует такого пользователя " + userId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
+        user.getFavoritesList().add(product);
+        userRepository.save(user);
     }
 
     private UserDTO map(User user) {
