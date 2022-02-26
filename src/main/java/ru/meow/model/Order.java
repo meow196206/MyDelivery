@@ -2,8 +2,11 @@ package ru.meow.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import ru.meow.enums.OrderStatus;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -18,6 +21,13 @@ public class Order {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private OrderStatus status;
+
+    @Column
+    private LocalDateTime createdDate;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false,
             updatable = false)
@@ -30,7 +40,7 @@ public class Order {
             @JoinColumn(name = "order_id", referencedColumnName = "id"),
             inverseJoinColumns =
             @JoinColumn(name = "product_id", referencedColumnName = "id"))
-    private List<Product> productList;
+    private List<Product> productList = new ArrayList<>();
 
 
 }

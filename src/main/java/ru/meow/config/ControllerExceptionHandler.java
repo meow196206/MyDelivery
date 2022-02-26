@@ -1,4 +1,4 @@
-package ru.meow.controller.config;
+package ru.meow.config;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

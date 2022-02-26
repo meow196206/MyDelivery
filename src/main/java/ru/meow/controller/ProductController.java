@@ -1,5 +1,6 @@
 package ru.meow.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.meow.dto.ProductDTO;
@@ -7,6 +8,7 @@ import ru.meow.service.ProductService;
 
 import java.util.List;
 
+@SecurityRequirement(name = "bearerAuth")
 @AllArgsConstructor
 @RestController
 @RequestMapping(path = "/product")
