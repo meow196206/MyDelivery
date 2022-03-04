@@ -36,8 +36,6 @@ public class OrderController {
         orderService.deleteProductFromOrder(orderId, productId);
     }
 
-//    Создать заказ, удалить заказ, добавить продукт в заказ и удалить весь lombok!
-
     @PostMapping("{orderId}/product/{productId}")
     public void addProductToOrder(@PathVariable Long orderId, @PathVariable Long productId) {
         orderService.addProductToOrder(orderId, productId);

@@ -12,6 +12,4 @@ public interface UserService {
     void deletedUser(Long id);
 
     UserDTO updateUser(Long id, UserDTO userDTO);
-
-    void addProductToFavorites(Long userId, Long productId);
 }

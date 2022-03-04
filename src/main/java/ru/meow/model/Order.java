@@ -1,6 +1,5 @@
 package ru.meow.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import ru.meow.enums.OrderStatus;
 
@@ -28,19 +27,11 @@ public class Order {
     @Column
     private LocalDateTime createdDate;
 
+    @OneToMany(mappedBy = "order")
+    private List<OrderProduct> orderProductList = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false,
             updatable = false)
-    @JsonIgnore
     private User user;
-
-    @ManyToMany
-    @JoinTable(name = "orders_products",
-            joinColumns =
-            @JoinColumn(name = "order_id", referencedColumnName = "id"),
-            inverseJoinColumns =
-            @JoinColumn(name = "product_id", referencedColumnName = "id"))
-    private List<Product> productList = new ArrayList<>();
-
-
 }

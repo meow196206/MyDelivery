@@ -2,6 +2,7 @@ package ru.meow.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.meow.dto.ProductDTO;
 import ru.meow.service.ProductService;
@@ -36,4 +37,13 @@ public class ProductController {
         return productService.updateProduct(id, productDTO);
     }
 
+    @PostMapping("/favorites/{productId}")
+    void addProductToFavorites(Authentication auth, @PathVariable Long productId){
+        productService.addProductToFavorites(auth.getName(), productId);
+    }
+
+    @DeleteMapping("/favorites/{productId}")
+    void deleteProductToFavorites(Authentication auth, @PathVariable Long productId){
+        productService.deleteProductToFavorites(auth.getName(), productId);
+    }
 }

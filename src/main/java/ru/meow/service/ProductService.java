@@ -12,4 +12,8 @@ public interface ProductService {
     void deletedProduct(Long id);
 
     ProductDTO updateProduct(Long id, ProductDTO productDTO);
+
+    void addProductToFavorites(String login, Long productId);
+
+    void deleteProductToFavorites(String login, Long productId);
 }

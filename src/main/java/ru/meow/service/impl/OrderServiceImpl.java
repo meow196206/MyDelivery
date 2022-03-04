@@ -2,19 +2,22 @@ package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.meow.dto.OrderDTO;
+import ru.meow.dto.ProductCountDTO;
 import ru.meow.dto.ProductDTO;
 import ru.meow.enums.OrderStatus;
 import ru.meow.exception.NotFoundUserException;
 import ru.meow.model.Order;
+import ru.meow.model.OrderProduct;
 import ru.meow.model.Product;
 import ru.meow.model.User;
+import ru.meow.repository.OrderProductRepository;
 import ru.meow.repository.OrderRepository;
 import ru.meow.repository.ProductRepository;
 import ru.meow.repository.UserRepository;
 import ru.meow.service.OrderService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +25,12 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private ProductRepository productRepository;
     private UserRepository userRepository;
+    private OrderProductRepository orderProductRepository;
 
     @Override
     public List<OrderDTO> findByLogin(String login) {
@@ -35,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public OrderDTO createOrder(String login, OrderDTO orderDTO) {
         Optional<User> byLogin = userRepository.findByLogin(login);
         User user = byLogin.orElseThrow(() -> new NotFoundUserException("Не существует такого юзера"));
@@ -44,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void deleteOrder(String login, Long id) {
         orderRepository.deleteByIdAndUser_Login(id, login);
     }
@@ -57,26 +63,49 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void addProductToOrder(Long orderId, Long productId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Не существует такого заказа " + orderId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
-        order.getProductList().add(product);
-        orderRepository.save(order);
+        Optional<OrderProduct> byOrderAndProduct = orderProductRepository.findByOrderAndProduct(order, product);
+        if (byOrderAndProduct.isPresent()) {
+            OrderProduct orderProduct = byOrderAndProduct.get();
+            orderProduct.setCount(orderProduct.getCount() + 1);
+            orderProductRepository.save(orderProduct);
+        } else {
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setProduct(product);
+            orderProduct.setOrder(order);
+            orderProduct.setCount(1L);
+            orderProductRepository.save(orderProduct);
+            order.getOrderProductList().add(orderProduct);
+            orderRepository.save(order);
+        }
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void deleteProductFromOrder(Long orderId, Long productId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Не существует такого заказа " + orderId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
-        order.getProductList().remove(product);
-        orderRepository.save(order);
+        Optional<OrderProduct> byOrderAndProduct = orderProductRepository.findByOrderAndProduct(order, product);
+        if (byOrderAndProduct.isPresent()) {
+            OrderProduct orderProduct = byOrderAndProduct.get();
+            if (orderProduct.getCount() > 1) {
+                orderProduct.setCount(orderProduct.getCount() - 1);
+                orderProductRepository.save(orderProduct);
+            } else {
+                orderProductRepository.removeByOrderAndProduct(order, product);
+            }
+        }
     }
 
     @Override
+    @Transactional(readOnly = false)
     public OrderDTO changeStatus(Long id, OrderStatus status) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("не сущетсвует такого заказа " + id));
@@ -85,12 +114,19 @@ public class OrderServiceImpl implements OrderService {
         return map(order);
     }
 
+    private ProductCountDTO map(OrderProduct orderProduct) {
+        ProductCountDTO productCountDTO = new ProductCountDTO();
+        productCountDTO.setCount(orderProduct.getCount());
+        productCountDTO.setProductDTO(map(orderProduct.getProduct()));
+        return productCountDTO;
+    }
+
     private OrderDTO map(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(order.getId());
         orderDTO.setStatus(order.getStatus());
         orderDTO.setCreateDate(order.getCreatedDate());
-        List<ProductDTO> collect = order.getProductList().stream()
+        List<ProductCountDTO> collect = order.getOrderProductList().stream()
                 .map(this::map)
                 .collect(Collectors.toList());
         orderDTO.setProductList(collect);

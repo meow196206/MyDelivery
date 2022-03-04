@@ -3,6 +3,7 @@ package ru.meow.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.meow.dto.ProductDTO;
 import ru.meow.dto.UserDTO;
 import ru.meow.model.Product;
 import ru.meow.model.User;
@@ -61,22 +62,24 @@ public class UserServiceImpl implements UserService {
         return map(save);
     }
 
-    @Override
-    public void addProductToFavorites(Long userId, Long productId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Не существует такого пользователя " + userId));
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
-        user.getFavoritesList().add(product);
-        userRepository.save(user);
-    }
-
     private UserDTO map(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setLogin(user.getLogin());
         userDTO.setName(user.getName());
         userDTO.setPassword(user.getPassword());
+        userDTO.setFavoriteList(map(user.getFavoritesList()));
         return userDTO;
+    }
+
+    private List<ProductDTO> map(List<Product> productList) {
+       return productList.stream().map(product -> {
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setPrice(product.getPrice());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setName(product.getName());
+            productDTO.setId(product.getId());
+            return productDTO;
+        }).collect(Collectors.toList());
     }
 }

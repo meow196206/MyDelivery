@@ -20,7 +20,4 @@ public class Product {
     private int price;
     @Column
     private String description;
-
-//    @ManyToMany(mappedBy = "productList")
-//    private List<Order> orderList;
 }

@@ -2,9 +2,12 @@ package ru.meow.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.meow.dto.ProductDTO;
 import ru.meow.model.Product;
+import ru.meow.model.User;
 import ru.meow.repository.ProductRepository;
+import ru.meow.repository.UserRepository;
 import ru.meow.service.ProductService;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
+    private UserRepository userRepository;
 
     @Override
     public List<ProductDTO> getAllProduct() {
@@ -46,6 +50,27 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(productDTO.getPrice());
         Product save = productRepository.save(product);
         return map(save);
+    }
+
+    @Override
+    public void addProductToFavorites(String login, Long productId) {
+        User user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого пользователя " + login));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
+        user.getFavoritesList().add(product);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteProductToFavorites(String login, Long productId) {
+        User user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого пользователя " + login));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Не существует такого продукта " + productId));
+        user.getFavoritesList().remove(product);
+        userRepository.save(user);
     }
 
     private ProductDTO map(Product product) {

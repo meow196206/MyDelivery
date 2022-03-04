@@ -32,9 +32,4 @@ public class UserController {
     public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         return userService.updateUser(id, userDTO);
     }
-
-    @PostMapping("{userId}/product/{productId}")
-    public void addProductToFavorites(@PathVariable Long userId, @PathVariable Long productId) {
-        userService.addProductToFavorites(userId, productId);
-    }
 }
